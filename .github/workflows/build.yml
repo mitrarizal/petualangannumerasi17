@@ -17,7 +17,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
+
+      - name: Setup Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
       - name: Decode Release Keystore
         env:
@@ -27,16 +31,13 @@ jobs:
             echo "$KEYSTORE_BASE64" | base64 -d > app/release-keystore.jks
           fi
 
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
-
       - name: Build Release AAB
         env:
           KEYSTORE_FILE: release-keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease --no-daemon
+        run: gradle bundleRelease --no-daemon
 
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
