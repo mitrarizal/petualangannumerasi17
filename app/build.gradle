@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace 'com.petualangannumerasi.app'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.petualangannumerasi.app"
         minSdk 24
-        targetSdk 35
-        versionCode 1
+        targetSdk 36
+        versionCode 1 // Naikkan angka ini (mis. 2, 3) jika sudah pernah mengunggah AAB sebelumnya
         versionName "1.0.0"
     }
 
