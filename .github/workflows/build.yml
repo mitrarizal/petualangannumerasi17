@@ -25,12 +25,63 @@ jobs:
           gradle-version: '8.11.1'
 
       - name: Decode Keystore
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
+        run: |
+          if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "ERROR: Secret KEYSTORE_BASE64 kosong atau belum dibuat."
+            exit 1
+          fi
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
 
-      - name: Create google-services.json
+      - name: Create and Validate google-services.json
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: printf "%s" "$GOOGLE_SERVICES_JSON" > app/google-services.json
+        run: |
+          python3 - << 'EOF'
+          import base64
+          import json
+          import os
+          import sys
+
+          raw = os.environ.get("GOOGLE_SERVICES_JSON", "").strip()
+          if not raw:
+              print("ERROR: Secret GOOGLE_SERVICES_JSON kosong atau belum dibuat di GitHub Secrets!")
+              sys.exit(1)
+
+          # Bersihkan karakter UTF-8 BOM jika disalin dari editor Windows
+          raw = raw.lstrip("\ufeff").strip()
+
+          # Decode otomatis jika secret disimpan dalam format Base64
+          if not raw.startswith("{"):
+              try:
+                  decoded = base64.b64decode(raw).decode("utf-8").lstrip("\ufeff").strip()
+                  if decoded.startswith("{"):
+                      raw = decoded
+              except Exception:
+                  pass
+
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError as e:
+              print(f"ERROR: Format GOOGLE_SERVICES_JSON bukan JSON valid: {e}")
+              sys.exit(1)
+
+          if not isinstance(data, dict) or "project_info" not in data or "client" not in data:
+              print("ERROR: Struktur google-services.json tidak lengkap (project_info/client tidak ditemukan).")
+              sys.exit(1)
+
+          packages = [
+              c.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              for c in data.get("client", [])
+          ]
+          if "com.petualangannumerasi.app" not in packages:
+              print(f"ERROR: Package 'com.petualangannumerasi.app' tidak ditemukan. Package di file Anda: {packages}")
+              sys.exit(1)
+
+          with open("app/google-services.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, indent=2)
+
+          print("OK: app/google-services.json valid untuk com.petualangannumerasi.app")
+          EOF
 
       - name: Build Release AAB (SDK 36)
         env:
