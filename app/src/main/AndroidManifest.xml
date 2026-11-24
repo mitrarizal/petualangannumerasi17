@@ -24,7 +24,7 @@
         <!-- Ganti dengan App ID Produksi AdMob Anda sebelum rilis -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-6983364109428063~7375902379" />
 
         <!-- Tunda pengukuran SDK sampai AdManager menerapkan kebijakan COPPA/G -->
         <meta-data
