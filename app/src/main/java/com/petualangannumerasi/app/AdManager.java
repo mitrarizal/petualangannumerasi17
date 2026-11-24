@@ -37,9 +37,9 @@ import java.util.Date;
 public class AdManager implements DefaultLifecycleObserver {
 
     // Ganti 3 Unit ID Test berikut dengan Unit ID Produksi AdMob Anda sebelum rilis
-    private static final String AD_UNIT_APP_OPEN = "ca-app-pub-3940256099942544/9257395921";
-    private static final String AD_UNIT_NATIVE = "ca-app-pub-3940256099942544/2247696110";
-    private static final String AD_UNIT_INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";
+    private static final String AD_UNIT_APP_OPEN = "ca-app-pub-6983364109428063/4167285107";
+    private static final String AD_UNIT_NATIVE = "ca-app-pub-6983364109428063/8364057126";
+    private static final String AD_UNIT_INTERSTITIAL = "ca-app-pub-6983364109428063/5480366779";
 
     private static final long APP_OPEN_COOLDOWN_MS = 30_000L; // Jeda minimal 30 detik antar iklan layar penuh
 
